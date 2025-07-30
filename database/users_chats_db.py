@@ -103,8 +103,16 @@ class Database:
         return bool(user)
 
     async def total_users_count(self):
+        """Returns the total number of users in the database."""
         count = await self.col.count_documents({})
         return count
+
+    async def get_users_slice(self, start, limit):
+        """Fetches a slice of users for pagination using an asynchronous cursor."""
+        cursor = self.col.find({}, {"_id": 0, "id": 1, "name": 1}).skip(start).limit(limit)
+        # Convert the async cursor to a list
+        users_list = await cursor.to_list(length=limit)
+        return users_list
 
     async def get_all_users(self):
         return self.col.find({})
@@ -476,6 +484,5 @@ class Database:
             {"$set": {'stream_mode_user': is_enabled}},
             upsert=True
     )
-
 
 db = Database()
