@@ -85,6 +85,7 @@ PRICING_POINTS = {
 # Referral System
 REFER_POINTS = int(environ.get("REFER_POINTS", 10))
 PREMIUM_POINT = int(environ.get("PREMIUM_POINT", 100))
+REF_PREMIUM = int(environ.get("REF_PREMIUM", 30))
 
 # Added Link Here Not Id
 SUPPORT_CHAT = environ.get("SUPPORT_CHAT", "")

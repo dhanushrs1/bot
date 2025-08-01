@@ -1,6 +1,7 @@
 import os
 import sys
 import glob
+import time
 import importlib
 from pathlib import Path
 from pyrogram import idle
@@ -40,6 +41,7 @@ from Jisshu.bot.clients import initialize_clients
 
 ppath = "plugins/*.py"
 files = glob.glob(ppath)
+JisshuBot.start_time = time.time()
 JisshuBot.start()
 loop = asyncio.get_event_loop()
 
