@@ -29,7 +29,7 @@ ADMINS = [
     for admin in environ.get("ADMINS", "5672857559").split()
 ]
 OWNER_USERNAME = environ.get(
-    "OWNER_USERNAME", "IM_JISSHU"
+    "OWNER_USERNAME", "monsterx_1"
 )  # without @ or https://t.me/
 USERNAME = environ.get("USERNAME", "")  # ADMIN USERNAME
 
@@ -61,19 +61,18 @@ PREDVD_KEYWORDS = ["predvd", "cam", "hdcam", "hd-ts", "ts", "telesync", "theatre
 
 
 # Other Channel's
-SUPPORT_GROUP = int(environ.get("SUPPORT_GROUP", "-1001864434358"))
+SUPPORT_GROUP = int(environ.get("SUPPORT_GROUP", ""))
 DELETE_CHANNELS = int(environ.get("DELETE_CHANNELS", "0"))
-request_channel = environ.get("REQUEST_CHANNEL", "-1001864434358")
+request_channel = environ.get("REQUEST_CHANNEL", "")
 REQUEST_CHANNEL = (
     int(request_channel)
     if request_channel and id_pattern.search(request_channel)
     else None
 )
-MOVIE_UPDATE_CHANNEL = int(environ.get("MOVIE_UPDATE_CHANNEL", "-1001864434358"))
+MOVIE_UPDATE_CHANNEL = int(environ.get("MOVIE_UPDATE_CHANNEL", ""))
 
 #Premium feature
 UPI_ID = environ.get("UPI_ID", "hdcinema@airtel")
-
 PRICING_POINTS = {
     1: 5,
     7: 25,
@@ -82,6 +81,10 @@ PRICING_POINTS = {
     180: 179,
     365: 299
 }
+
+# Referral System
+REFER_POINTS = int(environ.get("REFER_POINTS", 10))
+PREMIUM_POINT = int(environ.get("PREMIUM_POINT", 100))
 
 # Added Link Here Not Id
 SUPPORT_CHAT = environ.get("SUPPORT_CHAT", "")

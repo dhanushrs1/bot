@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
+from database.users_chats_db import db
 from info import ADMINS
 
 # --- MAIN COMMAND HANDLER ---
@@ -9,7 +9,6 @@ from info import ADMINS
 async def panel_command(client, message):
     """
     Handles the /panel command.
-    This version provides a clean, comprehensive list of all commands without live status checks.
     """
     if message.from_user.id in ADMINS:
         # --- Admin's Main Menu ---
@@ -41,7 +40,7 @@ async def botpanel_callback(client, query):
 
     if menu_type == "admin":
         text = "<b>👑 Admin Control Panel</b>\n\nCommands for bot administration and management."
-        text += get_admin_commands_text() 
+        text += await get_admin_commands_text(client)  # Pass the 'client' object
     elif menu_type == "group":
         text = "<b>👥 Group Management Panel</b>\n\nCommands for controlling the bot in groups."
         text += get_group_commands_text()
@@ -62,14 +61,22 @@ async def botpanel_callback(client, query):
 
 # --- HELPER FUNCTIONS TO GENERATE TEXT ---
 
-def get_admin_commands_text():
-    """Generates the complete Admin Commands text."""
-    return """
+async def get_admin_commands_text(client):  # Accept 'client' as an argument
+    """Generates the complete Admin Commands text with status indicators."""
+    
+    bot_id = client.me.id
+    
+    # Get the current status of the features
+    pm_search_status = "✅ ON" if await db.get_pm_search_status(bot_id) else "❌ OFF"
+    movie_update_status = "✅ ON" if await db.get_send_movie_update_status(bot_id) else "❌ OFF"
+    stream_mode_status = "✅ ON" if await db.get_stream_mode_global() else "❌ OFF"
+
+    return f"""
 <hr>
 <b><u>⚙️ Global Bot Settings</u></b>
-<code>/pm_search_on</code> | <code>/pm_search_off</code>
-<code>/movie_update_on</code> | <code>/movie_update_off</code>
-<code>/stream_on</code> | <code>/stream_off</code>
+<code>/pm_search_on</code> | <code>/pm_search_off</code> - PM Search: <b>{pm_search_status}</b>
+<code>/movie_update_on</code> | <code>/movie_update_off</code> - Movie Update: <b>{movie_update_status}</b>
+<code>/stream_on</code> | <code>/stream_off</code> - Stream Mode: <b>{stream_mode_status}</b>
 
 <b><u>📊 Core & Statistics</u></b>
 <code>/stats</code> - View bot usage statistics.
@@ -96,7 +103,6 @@ def get_admin_commands_text():
 <code>/del_file</code> & <code>/deletefiles</code> - Delete files from DB by keyword.
 
 <b><u>🔗 Content & Links</u></b>
-<code>/createlink</code> | <code>/linkstats</code> | <code>/searchlinks</code> | <code>/linkhelp</code> - Manage permanent links.
 <code>/set_muc</code> - Set the movie update channel.
 <code>/setlist</code> & <code>/clearlist</code> - Manage the top trending list.
 
