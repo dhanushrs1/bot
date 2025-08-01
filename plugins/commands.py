@@ -48,6 +48,7 @@ movie_series_db = JsTopDB(DATABASE_URI)
 verification_ids = {}
 
 
+
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client: Client, message):
     await message.react(emoji=random.choice(REACTIONS))
@@ -159,16 +160,12 @@ async def start(client: Client, message):
                 )
             ],
             [
-                InlineKeyboardButton("• ᴅɪꜱᴀʙʟᴇ ᴀᴅꜱ •", callback_data="jisshupremium"),
-                InlineKeyboardButton("• ꜱᴘᴇᴄɪᴀʟ •", callback_data="special"),
-            ],
-            [
-                InlineKeyboardButton("• ʜᴇʟᴘ •", callback_data="help"),
-                InlineKeyboardButton("• ᴀʙᴏᴜᴛ •", callback_data="about"),
+                InlineKeyboardButton(" ᴅɪꜱᴀʙʟᴇ ᴀᴅꜱ ", callback_data="jisshupremium"),
+                InlineKeyboardButton(" ꜱᴘᴇᴄɪᴀʟ ", callback_data="special"),
             ],
             [
                 InlineKeyboardButton(
-                    "• ᴇᴀʀɴ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ •", callback_data="earn"
+                    " ᴇᴀʀɴ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ ", callback_data="earn"
                 )
             ],
         ]
@@ -196,16 +193,12 @@ async def start(client: Client, message):
                 )
             ],
             [
-                InlineKeyboardButton("• ᴅɪꜱᴀʙʟᴇ ᴀᴅꜱ •", callback_data="jisshupremium"),
-                InlineKeyboardButton("• ꜱᴘᴇᴄɪᴀʟ •", callback_data="special"),
-            ],
-            [
-                InlineKeyboardButton("• ʜᴇʟᴘ •", callback_data="help"),
-                InlineKeyboardButton("• ᴀʙᴏᴜᴛ •", callback_data="about"),
+                InlineKeyboardButton(" ᴅɪꜱᴀʙʟᴇ ᴀᴅꜱ ", callback_data="jisshupremium"),
+                InlineKeyboardButton(" ꜱᴘᴇᴄɪᴀʟ ", callback_data="special"),
             ],
             [
                 InlineKeyboardButton(
-                    "• ᴇᴀʀɴ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ •", callback_data="earn"
+                    " ᴇᴀʀɴ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ ", callback_data="earn"
                 )
             ],
         ]
@@ -1374,32 +1367,51 @@ async def top(client, query):
         "<b>Here Is The Top Trending List 👇</b>", reply_markup=spika
     )
 
-
 @Client.on_message(filters.command("refer"))
 async def refer(bot, message):
+    user_id = message.from_user.id
+    user_points = referdb.get_refer_points(user_id)
+    referral_link = f"https://telegram.dog/{bot.me.username}?start=reff_{user_id}"
+    photo_url = REFER_PICS
+    caption_text = (
+        f"<b>Hey {message.from_user.mention}!</b> 👋\n\n"
+        "Invite your friends and unlock <i>premium features</i> for free!\n\n"
+        "<u><b>Here's how it works:</b></u>\n"
+        "1️⃣ Share your unique referral link.\n"
+        "2️⃣ For every friend who joins, you'll earn <b>10 points</b>.\n"
+        "3️⃣ Collect <b>100 points</b> to get a <b><i>1-month premium subscription</i></b> on us! 🚀\n\n"
+        "👇 <b>Your Personal Invite Link</b> (Tap to copy)\n"
+        f"<code>{referral_link}</code>"
+    )
     btn = [
         [
             InlineKeyboardButton(
-                "• ɪɴᴠɪᴛᴇ ʟɪɴᴋ •",
-                url=f"https://telegram.me/share/url?url=https://telegram.dog/{bot.me.username}?start=reff_{message.from_user.id}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83",
+                "ꜱʜᴀʀᴇ & ɪɴᴠɪᴛᴇ ғʀɪᴇɴᴅꜱ",
+                url=f"https://telegram.me/share/url?url={referral_link}&text=Check%20out%20this%20bot%21%20It%20has%20a%20huge%20library%20of%20movies%20and%20shows.%20Join%20with%20my%20link%21%20%F0%9F%8D%BF"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                f"📊 ᴍʏ ᴘᴏɪɴᴛꜱ: {user_points}",
+                callback_data="ref_point"
             ),
             InlineKeyboardButton(
-                f"⏳ {referdb.get_refer_points(message.from_user.id)}",
-                callback_data="ref_point",
-            ),
-            InlineKeyboardButton("• ᴄʟᴏsᴇ •", callback_data="close_data"),
+                "❌ ᴄʟᴏsᴇ", 
+                callback_data="close_data"
+            )
         ]
     ]
-    m = await message.reply_sticker(
-        "CAACAgQAAxkBAAEkt_Rl_7138tgHJdEsqSNzO5mPWioZDgACGRAAAudLcFGAbsHU3KNJUx4E"
-    )
-    await m.delete()
     reply_markup = InlineKeyboardMarkup(btn)
+    await bot.send_chat_action(
+        chat_id=message.chat.id,
+        action=enums.ChatAction.UPLOAD_PHOTO
+    )
+
     await message.reply_photo(
-        photo=random.choice(REFER_PICS),
-        caption=f"👋Hay {message.from_user.mention},\n\nHᴇʀᴇ ɪꜱ ʏᴏᴜʀ ʀᴇғғᴇʀᴀʟ ʟɪɴᴋ:\nhttps://telegram.dog/{bot.me.username}?start=reff_{message.from_user.id}\n\nShare this link with your friends, Each time they join,  you will get 10 refferal points and after 100 points you will get 1 month premium subscription.",
+        photo=photo_url, 
+        caption=caption_text,
         reply_markup=reply_markup,
-        parse_mode=enums.ParseMode.HTML,
+        parse_mode=enums.ParseMode.HTML, 
     )
 
 

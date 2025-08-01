@@ -57,6 +57,9 @@ DATABASE_NAME = environ.get("DATABASE_NAME", "Cluster0")
 FILES_DATABASE = environ.get("FILES_DATABASE", "")
 COLLECTION_NAME = environ.get("COLLECTION_NAME", "jisshu")
 
+PREDVD_KEYWORDS = ["predvd", "cam", "hdcam", "hd-ts", "ts", "telesync", "theatre.copy", "camrip"]
+
+
 # Other Channel's
 SUPPORT_GROUP = int(environ.get("SUPPORT_GROUP", "-1001864434358"))
 DELETE_CHANNELS = int(environ.get("DELETE_CHANNELS", "0"))

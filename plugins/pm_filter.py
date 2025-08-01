@@ -202,28 +202,56 @@ async def group_search(client, message):
 
 @Client.on_callback_query(filters.regex(r"^reffff"))
 async def refercall(bot, query):
+    user_id = query.from_user.id
+    user_points = referdb.get_refer_points(user_id)
+    referral_link = f"https://telegram.dog/{bot.me.username}?start=reff_{user_id}"
+    response_text = (
+        f"<b>Hey {query.from_user.mention}!</b> 👋\n\n"
+        "Invite your friends and unlock <i>premium features</i> for free!\n\n"
+        "<u><b>Here's how it works:</b></u>\n"
+        "1️⃣ Share your unique referral link.\n"
+        "2️⃣ For every friend who joins, you'll earn <b>10 points</b>.\n"
+        "3️⃣ Collect <b>100 points</b> to get a <b><i>1-month premium subscription</i></b> on us! 🚀\n\n"
+        "👇 <b>Your Personal Invite Link</b> (Tap to copy)\n"
+        f"<code>{referral_link}</code>"
+    )
     btn = [
         [
             InlineKeyboardButton(
-                "• ɪɴᴠɪᴛᴇ ʟɪɴᴋ •",
-                url=f"https://telegram.me/share/url?url=https://telegram.dog/{bot.me.username}?start=reff_{query.from_user.id}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83",
+                "ꜱʜᴀʀᴇ & ɪɴᴠɪᴛᴇ ғʀɪᴇɴᴅꜱ",
+                url=f"https://telegram.me/share/url?url={referral_link}&text=Check%20out%20this%20bot%21%20It%20has%20a%20huge%20library%20of%20movies%20and%20shows.%20Join%20with%20my%20link%21%20%F0%9F%8D%BF"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                f"📊 ᴍʏ ᴘᴏɪɴᴛꜱ: {user_points}",
+                callback_data="ref_point"
             ),
             InlineKeyboardButton(
-                f"⏳ {referdb.get_refer_points(query.from_user.id)}",
-                callback_data="ref_point",
-            ),
-        ],
-        [InlineKeyboardButton("• ᴄʟᴏsᴇ •", callback_data="close_data")],
+                "🔙 ʙᴀᴄᴋ", 
+                callback_data="jisshupremium"  
+            )
+        ]
     ]
-    reply_markup = InlineKeyboardMarkup(btn)
-    await bot.send_photo(
-        chat_id=query.message.chat.id,
-        photo="https://graph.org/file/1a2e64aee3d4d10edd930.jpg",
-        caption=f"Hay Your refer link:\n\nhttps://telegram.dog/{bot.me.username}?start=reff_{query.from_user.id}\n\nShare this link with your friends, Each time they join, you will get 10 referral points and after 100 points you will get 1 month premium subscription.",
-        reply_markup=reply_markup,
-        parse_mode=enums.ParseMode.HTML,
-    )
-    await query.answer()
+    reply_markup = InlineKeyboardMarkup(btn)    
+    try:
+        await query.message.edit_text(
+            text=response_text,
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML,
+            disable_web_page_preview=True 
+        )
+    except Exception as e:
+        await bot.send_message(
+            chat_id=query.message.chat.id,
+            text=response_text,
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML,
+            disable_web_page_preview=True
+        )
+
+    # Acknowledge the button press
+    await query.answer("Here is your referral info!")
 
 
 @Client.on_callback_query(filters.regex("admincmd"))
@@ -233,7 +261,7 @@ async def admin_commands(client, query):
 
     buttons = [
         [
-            InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data="help"),
+            InlineKeyboardButton(" ʙᴀᴄᴋ", callback_data="help"),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(buttons)
@@ -338,7 +366,7 @@ async def next_page(bot, query):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ", callback_data=f"next_{req}_{key}_{off_set}"
+                    " ʙᴀᴄᴋ", callback_data=f"next_{req}_{key}_{off_set}"
                 ),
                 InlineKeyboardButton(
                     f"ᴘᴀɢᴇ {math.ceil(int(offset) / int(MAX_BTN)) + 1} / {math.ceil(total / int(MAX_BTN))}",
@@ -362,7 +390,7 @@ async def next_page(bot, query):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ", callback_data=f"next_{req}_{key}_{off_set}"
+                    " ʙᴀᴄᴋ", callback_data=f"next_{req}_{key}_{off_set}"
                 ),
                 InlineKeyboardButton(
                     f"{math.ceil(int(offset) / int(MAX_BTN)) + 1} / {math.ceil(total / int(MAX_BTN))}",
@@ -414,7 +442,7 @@ async def seasons_cb_handler(client: Client, query: CallbackQuery):
     btn.append(
         [
             InlineKeyboardButton(
-                text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}"
+                text=" ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}"
             )
         ]
     )
@@ -532,7 +560,7 @@ async def season_search(client: Client, query: CallbackQuery):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ",
+                    " ʙᴀᴄᴋ",
                     callback_data=f"season_search#{season}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}",
                 ),
                 InlineKeyboardButton(
@@ -558,7 +586,7 @@ async def season_search(client: Client, query: CallbackQuery):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ",
+                    " ʙᴀᴄᴋ",
                     callback_data=f"season_search#{season}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}",
                 ),
                 InlineKeyboardButton(
@@ -575,7 +603,7 @@ async def season_search(client: Client, query: CallbackQuery):
     btn.append(
         [
             InlineKeyboardButton(
-                text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ",
+                text=" ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ",
                 callback_data=f"next_{req}_{key}_{orginal_offset}",
             ),
         ]
@@ -612,7 +640,7 @@ async def years_cb_handler(client: Client, query: CallbackQuery):
     btn.append(
         [
             InlineKeyboardButton(
-                text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}"
+                text=" ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}"
             )
         ]
     )
@@ -712,7 +740,7 @@ async def year_search(client: Client, query: CallbackQuery):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ",
+                    " ʙᴀᴄᴋ",
                     callback_data=f"years_search#{year}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}",
                 ),
                 InlineKeyboardButton(
@@ -738,7 +766,7 @@ async def year_search(client: Client, query: CallbackQuery):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ",
+                    " ʙᴀᴄᴋ",
                     callback_data=f"years_search#{year}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}",
                 ),
                 InlineKeyboardButton(
@@ -755,7 +783,7 @@ async def year_search(client: Client, query: CallbackQuery):
     btn.append(
         [
             InlineKeyboardButton(
-                text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ",
+                text=" ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ",
                 callback_data=f"next_{req}_{key}_{orginal_offset}",
             ),
         ]
@@ -791,7 +819,7 @@ async def quality_cb_handler(client: Client, query: CallbackQuery):
     btn.append(
         [
             InlineKeyboardButton(
-                text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}"
+                text=" ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}"
             )
         ]
     )
@@ -890,7 +918,7 @@ async def quality_search(client: Client, query: CallbackQuery):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ",
+                    " ʙᴀᴄᴋ",
                     callback_data=f"quality_search#{qul}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}",
                 ),
                 InlineKeyboardButton(
@@ -916,7 +944,7 @@ async def quality_search(client: Client, query: CallbackQuery):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ",
+                    " ʙᴀᴄᴋ",
                     callback_data=f"quality_search#{qul}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}",
                 ),
                 InlineKeyboardButton(
@@ -933,7 +961,7 @@ async def quality_search(client: Client, query: CallbackQuery):
     btn.append(
         [
             InlineKeyboardButton(
-                text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ",
+                text=" ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ",
                 callback_data=f"next_{req}_{key}_{orginal_offset}",
             ),
         ]
@@ -970,7 +998,7 @@ async def languages_cb_handler(client: Client, query: CallbackQuery):
     btn.append(
         [
             InlineKeyboardButton(
-                text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}"
+                text=" ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}"
             )
         ]
     )
@@ -1082,7 +1110,7 @@ async def lang_search(client: Client, query: CallbackQuery):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ",
+                    " ʙᴀᴄᴋ",
                     callback_data=f"lang_search#{lang}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}",
                 ),
                 InlineKeyboardButton(
@@ -1108,7 +1136,7 @@ async def lang_search(client: Client, query: CallbackQuery):
         btn.append(
             [
                 InlineKeyboardButton(
-                    "⋞ ʙᴀᴄᴋ",
+                    " ʙᴀᴄᴋ",
                     callback_data=f"lang_search#{lang}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}",
                 ),
                 InlineKeyboardButton(
@@ -1125,7 +1153,7 @@ async def lang_search(client: Client, query: CallbackQuery):
     btn.append(
         [
             InlineKeyboardButton(
-                text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ",
+                text=" ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ",
                 callback_data=f"next_{req}_{key}_{orginal_offset}",
             ),
         ]
@@ -1311,16 +1339,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 )
             ],
             [
-                InlineKeyboardButton("• ᴅɪꜱᴀʙʟᴇ ᴀᴅꜱ •", callback_data="jisshupremium"),
-                InlineKeyboardButton("• ꜱᴘᴇᴄɪᴀʟ •", callback_data="special"),
-            ],
-            [
-                InlineKeyboardButton("• ʜᴇʟᴘ •", callback_data="help"),
-                InlineKeyboardButton("• ᴀʙᴏᴜᴛ •", callback_data="about"),
+                InlineKeyboardButton(" ᴅɪꜱᴀʙʟᴇ ᴀᴅꜱ ", callback_data="jisshupremium"),
+                InlineKeyboardButton(" ꜱᴘᴇᴄɪᴀʟ ", callback_data="special"),
             ],
             [
                 InlineKeyboardButton(
-                    "• ᴇᴀʀɴ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ •", callback_data="earn"
+                    " ᴇᴀʀɴ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏɴᴇʏ ᴡɪᴛʜ ʙᴏᴛ ", callback_data="earn"
                 )
             ],
         ]
@@ -1345,7 +1369,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 InlineKeyboardButton("ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ", callback_data="free"),
                 InlineKeyboardButton("ʀᴇꜰᴇʀ & ᴇᴀʀɴ", callback_data="reffff"),
             ],
-            [InlineKeyboardButton("⋞ ʜᴏᴍᴇ", callback_data="start")],
+            [InlineKeyboardButton(" ʜᴏᴍᴇ", callback_data="start")],
         ]
         reply_markup = InlineKeyboardMarkup(btn)
         await query.message.edit_text(
@@ -1357,13 +1381,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "special":
         btn = [
             [
-                InlineKeyboardButton("• ᴍᴏsᴛ sᴇᴀʀᴄʜ •", callback_data="mostsearch"),
-                InlineKeyboardButton("• ᴛᴏᴘ ᴛʀᴇɴᴅɪɴɢ •", callback_data="trending"),
+                InlineKeyboardButton("ᴍᴏsᴛ sᴇᴀʀᴄʜ", callback_data="mostsearch"),
+                InlineKeyboardButton(" ᴛᴏᴘ ᴛʀᴇɴᴅɪɴɢ ", callback_data="trending"),
             ],
             [
-                InlineKeyboardButton("• ɪᴍᴀɢᴇ ᴛᴏ ʟɪɴᴋ •", callback_data="telegraph"),
+                InlineKeyboardButton(" ɪᴍᴀɢᴇ ᴛᴏ ʟɪɴᴋ ", callback_data="telegraph"),
             ],
-            [InlineKeyboardButton("⋞ ʜᴏᴍᴇ", callback_data="start")],
+            [InlineKeyboardButton(" ʜᴏᴍᴇ", callback_data="start")],
         ]
         reply_markup = InlineKeyboardMarkup(btn)
         await query.message.edit_text(
@@ -1379,7 +1403,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     "♻️ ᴀʟʟ ɢʀᴏᴜᴘ ꜱᴇᴛᴛɪɴɢꜱ ᴅᴇᴛᴀɪʟꜱ ♻️", callback_data="earn2"
                 )
             ],
-            [InlineKeyboardButton("⪻ ʙᴀᴄᴋ ᴛᴏ ʜᴏᴍᴇ", callback_data="start")],
+            [InlineKeyboardButton(" ʙᴀᴄᴋ ᴛᴏ ʜᴏᴍᴇ", callback_data="start")],
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
@@ -1396,7 +1420,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     #                 "🍁 ᴄʜᴇᴄᴋ ᴀʟʟ ᴘʟᴀɴꜱ & ᴘʀɪᴄᴇꜱ 🍁", callback_data="free"
     #             )
     #         ],
-    #         [InlineKeyboardButton("⪻ ʙᴀᴄᴋ ᴛᴏ ʜᴏᴍᴇ", callback_data="start")],
+    #         [InlineKeyboardButton(" ʙᴀᴄᴋ ᴛᴏ ʜᴏᴍᴇ", callback_data="start")],
     #     ]
     #     reply_markup = InlineKeyboardMarkup(btn)
     #     await query.message.edit_text(
@@ -1430,14 +1454,14 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [
             [
                 InlineKeyboardButton(
-                    "☆📸 ꜱᴇɴᴅ ꜱᴄʀᴇᴇɴꜱʜᴏᴛ 📸☆",
+                    "ꜱᴇɴᴅ ꜱᴄʀᴇᴇɴꜱʜᴏᴛ",
                     url=f"https://telegram.me/{OWNER_USERNAME}",
                 )
             ],
-            [InlineKeyboardButton("💎 ᴄᴜꜱᴛᴏᴍ ᴘʟᴀɴ 💎", callback_data="custom_plan")],
+            [InlineKeyboardButton(" ᴄᴜꜱᴛᴏᴍ ᴘʟᴀɴ ", callback_data="custom_plan")],
             [
-                InlineKeyboardButton("• ʙᴀᴄᴋ •", callback_data="seeplans"),
-                InlineKeyboardButton("• ᴄʟᴏꜱᴇ •", callback_data="close_data"),
+                InlineKeyboardButton(" ʙᴀᴄᴋ ", callback_data="jisshupremium"),
+                InlineKeyboardButton(" ᴄʟᴏꜱᴇ ", callback_data="close_data"),
             ],
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
@@ -1498,10 +1522,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "help":
         buttons = [
             [
-                InlineKeyboardButton("• ᴀᴅᴍɪɴ •", callback_data="admincmd"),
-                InlineKeyboardButton("• ɢʀᴏᴜᴘ sᴇᴛᴜᴘ •", callback_data="earn2"),
+                InlineKeyboardButton(" ᴀᴅᴍɪɴ ", callback_data="admincmd"),
+                InlineKeyboardButton(" ɢʀᴏᴜᴘ sᴇᴛᴜᴘ ", callback_data="earn2"),
             ],
-            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ ᴛᴏ ʜᴏᴍᴇ", callback_data="start")],
+            [InlineKeyboardButton(" ʙᴀᴄᴋ ᴛᴏ ʜᴏᴍᴇ", callback_data="start")],
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
@@ -1527,7 +1551,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                             "ᴄᴏɴᴛʀɪʙᴜᴛᴏʀs", callback_data="mydevelopers"
                         ),
                     ],
-                    [InlineKeyboardButton("⋞ ʜᴏᴍᴇ", callback_data="start")],
+                    [InlineKeyboardButton(" ʜᴏᴍᴇ", callback_data="start")],
                 ]
             ),
             disable_web_page_preview=True,
@@ -1546,8 +1570,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 )
             ],
             [
-                InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data="about"),
-                InlineKeyboardButton("• ᴄʟᴏsᴇ •", callback_data="close_data"),
+                InlineKeyboardButton(" ʙᴀᴄᴋ", callback_data="about"),
+                InlineKeyboardButton(" ᴄʟᴏsᴇ ", callback_data="close_data"),
             ],
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
@@ -1564,7 +1588,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     "📲 ᴄᴏɴᴛᴀᴄᴛ ᴛᴏ ᴏᴡɴᴇʀ ", url=f"https://telegram.me/{OWNER_USERNAME}"
                 )
             ],
-            [InlineKeyboardButton("⇋ ʙᴀᴄᴋ ⇋", callback_data="about")],
+            [InlineKeyboardButton(" ʙᴀᴄᴋ ", callback_data="about")],
         ]
         reply_markup = InlineKeyboardMarkup(btn)
         await query.message.edit_text(
@@ -1580,7 +1604,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     url=f"http://telegram.dog/{temp.U_NAME}?startgroup=start",
                 )
             ],
-            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data="help")],
+            [InlineKeyboardButton(" ʙᴀᴄᴋ", callback_data="help")],
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await client.edit_message_media(
@@ -1595,7 +1619,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
 
     elif query.data == "telegraph":
-        buttons = [[InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data="special")]]
+        buttons = [[InlineKeyboardButton(" ʙᴀᴄᴋ", callback_data="special")]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
             text=script.TELE_TXT,
@@ -1603,7 +1627,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             parse_mode=enums.ParseMode.HTML,
         )
     elif query.data == "font":
-        buttons = [[InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data="special")]]
+        buttons = [[InlineKeyboardButton(" ʙᴀᴄᴋ", callback_data="special")]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
             text=script.FONT_TXT,
