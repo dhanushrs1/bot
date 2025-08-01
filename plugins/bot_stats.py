@@ -111,7 +111,7 @@ async def get_stats_dashboard(client, message):
         db.total_chat_count(),
         db.get_new_users_today(),
         db.get_new_groups_today(),
-        Media.count_documents() # This will now work
+        Media.count_documents() 
     )
     
     # --- Main Database (Users & Groups) Calculation ---
@@ -165,64 +165,3 @@ async def get_stats_dashboard(client, message):
 """
     await processing_msg.edit_text(stats_text, parse_mode=ParseMode.HTML)
 
-
-# --- Interactive Paginated List of Groups ---
-@Client.on_message(filters.command("groups") & filters.user(ADMINS))
-async def list_groups(bot, message):
-    msg = await message.reply("<b>🔄 Processing... Please wait.</b>", parse_mode=ParseMode.HTML)
-    await display_groups_page(bot, msg, 1)
-
-async def display_groups_page(bot, message, page_number):
-    chats_cursor = await db.get_all_chats()
-    # Correctly convert async cursor to a list
-    chats_list = [chat async for chat in chats_cursor]
-    
-    if not chats_list:
-        return await message.edit_text("No groups found in the database.")
-
-    total_pages = (len(chats_list) + GROUPS_PER_PAGE - 1) // GROUPS_PER_PAGE
-    start_index = (page_number - 1) * GROUPS_PER_PAGE
-    end_index = start_index + GROUPS_PER_PAGE
-    
-    out = f"<b>Total Groups in Database: {len(chats_list)}</b>\n\n"
-    
-    for i, chat in enumerate(chats_list[start_index:end_index], start=start_index + 1):
-        try:
-            chat_info = await bot.get_chat(chat['id'])
-            members = await bot.get_chat_members_count(chat['id'])  # <-- Fix here
-            out += f"<b>{i}. {chat['title']}</b>\n   - <b>ID:</b> <code>{chat['id']}</code>\n   - <b>Members:</b> <code>{members}</code>\n\n"
-        except Exception as e:
-            print(f"Error fetching chat {chat['id']}: {e}")
-            out += f"<b>{i}. {chat['title']}</b>\n   - <b>ID:</b> <code>{chat['id']}</code>\n   - <i>Could not fetch details.</i>\n\n"
-
-    buttons = []
-    if total_pages > 1:
-        nav_row = []
-        if page_number > 1:
-            nav_row.append(InlineKeyboardButton("⬅️ Back", callback_data=f"grp_nav_{page_number-1}"))
-        
-        nav_row.append(InlineKeyboardButton(f"Page {page_number}/{total_pages}", callback_data="noop")) # Added a noop callback for the page number button
-
-        if page_number < total_pages:
-            nav_row.append(InlineKeyboardButton("Next ➡️", callback_data=f"grp_nav_{page_number+1}"))
-        
-        buttons.append(nav_row)
-    
-    try:
-        await message.edit_text(out, reply_markup=InlineKeyboardMarkup(buttons), parse_mode=ParseMode.HTML)
-    except MessageTooLong:
-        with open("groups_list.txt", "w+", encoding="utf-8") as f:
-            f.write(out.replace("<b>", "").replace("</b>", "").replace("<code>", "").replace("</code>", ""))
-        await message.reply_document("groups_list.txt", caption="<b>List of all groups.</b>")
-    except MessageNotModified:
-        pass # Ignore if the page content is the same
-
-@Client.on_callback_query(filters.regex(r"^grp_nav_"))
-async def handle_group_nav(bot, query):
-    page = int(query.data.split("_")[2])
-    await display_groups_page(bot, query.message, page)
-
-@Client.on_callback_query(filters.regex(r"^noop$"))
-async def noop_callback(bot, query):
-    """Handles callbacks for buttons that should do nothing, like page numbers."""
-    await query.answer()
