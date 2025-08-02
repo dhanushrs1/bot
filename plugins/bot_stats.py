@@ -4,10 +4,15 @@ from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from info import ADMINS, LOG_CHANNEL, USERNAME
 from database.users_chats_db import db
 from database.ia_filterdb import Media, get_files_db_size
-from utils import get_size, temp
+from utils import get_size, temp, get_readable_time
+from pyrogram.enums import ParseMode
+import asyncio
 from Script import script
 import psutil
 import time
+
+MAIN_DB_STORAGE_LIMIT_GB = 0.5  # Main database storage limit in GB
+FILE_DB_STORAGE_LIMIT_GB = 0.5   # File index database storage limit in GB
 
 
 @Client.on_message(filters.new_chat_members & filters.group)
@@ -98,23 +103,74 @@ async def groups_list(bot, message):
         await message.reply_document("chats.txt", caption="<b>List of all groups</b>")
 
 
-@Client.on_message(filters.command("stats") & filters.user(ADMINS) & filters.incoming)
-async def get_ststs(bot, message):
-    users = await db.total_users_count()
-    groups = await db.total_chat_count()
-    size = get_size(await db.get_db_size())
-    free = get_size(536870912)
-    files = await Media.count_documents()
-    db2_size = get_size(await get_files_db_size())
-    db2_free = get_size(536870912)
-    uptime = time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - time.time()))
-    ram = psutil.virtual_memory().percent
-    cpu = psutil.cpu_percent()
-    await message.reply_text(
-        script.STATUS_TXT.format(
-            users, groups, size, free, files, db2_size, db2_free, uptime, ram, cpu
-        )
+@Client.on_message(filters.command("stats") & filters.user(ADMINS))
+async def get_stats_dashboard(client, message):
+    """
+    Handles the /stats command and displays an advanced, dual-database dashboard for admins.
+    """
+    processing_msg = await message.reply_text("<b>🔄 Generating stats dashboard...</b>", parse_mode=ParseMode.HTML)
+
+    # --- Fetch all stats in parallel for speed ---
+    db1_size, db2_size, total_users, total_groups, new_users_today, new_groups_today, total_files = await asyncio.gather(
+        db.get_db_size(),
+        get_files_db_size(),
+        db.total_users_count(),
+        db.total_chat_count(),
+        db.get_new_users_today(),
+        db.get_new_groups_today(),
+        Media.count_documents() 
     )
+    
+    # --- Main Database (Users & Groups) Calculation ---
+    db1_limit_bytes = MAIN_DB_STORAGE_LIMIT_GB * 1024 * 1024 * 1024
+    db1_used_str = get_size(db1_size)
+    db1_limit_str = get_size(db1_limit_bytes)
+    db1_remaining_bytes = db1_limit_bytes - db1_size
+    db1_remaining_str = get_size(db1_remaining_bytes if db1_remaining_bytes > 0 else 0)
+    
+    # --- File Index Database Calculation ---
+    db2_limit_bytes = FILE_DB_STORAGE_LIMIT_GB * 1024 * 1024 * 1024
+    db2_used_str = get_size(db2_size)
+    db2_limit_str = get_size(db2_limit_bytes)
+    db2_remaining_bytes = db2_limit_bytes - db2_size
+    db2_remaining_str = get_size(db2_remaining_bytes if db2_remaining_bytes > 0 else 0)
+    db2_usage_percent_str = round((db2_size / db2_limit_bytes) * 100, 2) if db2_limit_bytes > 0 else 0
+
+    # --- System & Bot Status ---
+    try:
+        uptime = get_readable_time(time.time() - client.start_time)
+    except AttributeError:
+        uptime = "N/A"
+        
+    ram_usage = f"{psutil.virtual_memory().percent}%"
+    cpu_usage = f"{psutil.cpu_percent()}%"
+
+    # --- Format the Final Dashboard Text with Separated Sections ---
+    stats_text = f"""
+📊 <b><u>Bot Statistics Dashboard</u></b>
+
+<b><u>👤 User Analytics:</u></b>
+  - <b>Total Users:</b> <code>{total_users}</code>
+  - <b>New Users Today:</b> <code>{new_users_today}</code>
+
+<b><u>🗃️Main Database (Users & Groups):</u></b>
+  - <b>Total Groups:</b> <code>{total_groups}</code>
+  - <b>New Groups Today:</b> <code>{new_groups_today}</code>
+  - <b>Size Used:</b> <code>{db1_used_str}</code> / <code>{db1_limit_str}</code>
+  - <b>Storage Remaining:</b> <code>{db1_remaining_str}</code>
+
+<b><u>📁 File Index Database:</u></b>
+  - <b>Total Files Indexed:</b> <code>{total_files}</code>
+  - <b>Size Used:</b> <code>{db2_used_str}</code> / <code>{db2_limit_str}</code>
+  - <b>Storage Remaining:</b> <code>{db2_remaining_str}</code>
+  - <b>Usage Percentage:</b> <code>{db2_usage_percent_str}%</code>
+
+<b><u>⚙️ System & Bot Status:</u></b>
+  - <b>Bot Uptime:</b> <code>{uptime}</code>
+  - <b>CPU Usage:</b> <code>{cpu_usage}</code>
+  - <b>RAM Usage:</b> <code>{ram_usage}</code>
+"""
+    await processing_msg.edit_text(stats_text, parse_mode=ParseMode.HTML)
 
 
 @Client.on_message(filters.command("invite") & filters.private & filters.user(ADMINS))

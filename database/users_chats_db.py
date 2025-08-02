@@ -52,7 +52,11 @@ class Database:
 
     def new_user(self, id, name):
         return dict(
-            id=id, name=name, point=0, ban_status=dict(is_banned=False, ban_reason="")
+            id=id,
+            name=name,
+            join_date=datetime.now(),
+            point=0,
+            ban_status=dict(is_banned=False, ban_reason="")
         )
 
     async def get_settings(self, group_id):
@@ -72,7 +76,12 @@ class Database:
         await self.req.drop()
 
     def new_group(self, id, title):
-        return dict(id=id, title=title, chat_status=dict(is_disabled=False, reason=""))
+        return dict(
+            id=id,
+            title=title,
+            join_date=datetime.now(),
+            chat_status=dict(is_disabled=False, reason="")
+        )
 
     async def add_user(self, id, name):
         user = self.new_user(id, name)
@@ -484,5 +493,15 @@ class Database:
             {"$set": {'stream_mode_user': is_enabled}},
             upsert=True
     )
+        
+    async def get_new_users_today(self):
+        """Gets the count of users who joined today."""
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        return await self.col.count_documents({"join_date": {"$gte": today}})
+
+    async def get_new_groups_today(self):
+        """Gets the count of groups added today."""
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        return await self.grp.count_documents({"join_date": {"$gte": today}})
 
 db = Database()
