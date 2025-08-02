@@ -86,22 +86,22 @@ sᴜᴄᴄᴇssғᴜʟʟʏ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ"""
 
 If there is an error, ask in the support group @Jisshu_support</b>"""
 
-    STATUS_TXT = """<b><u>♻️ ʙᴏᴛ ᴅᴀᴛᴀʙᴀsᴇ </u>
+    STATUS_TXT = """<b><u>♻️ ʙᴏᴛ ᴅᴀᴛᴀʙᴀsᴇ ♻️</u></b>
 
-» ᴛᴏᴛᴀʟ ᴜsᴇʀs - <code>{}</code>
-» ᴛᴏᴛᴀʟ ɢʀᴏᴜᴘs - <code>{}</code>
-» ᴜsᴇᴅ sᴛᴏʀᴀɢᴇ - <code>{} / {}</code>
+» ᴛᴏᴛᴀʟ ᴜsᴇʀs - <code>{total_users}</code>
+» ᴛᴏᴛᴀʟ ɢʀᴏᴜᴘs - <code>{total_groups}</code>
+» ᴜsᴇᴅ sᴛᴏʀᴀɢᴇ - <code>{db_used} / {db_limit}</code>
 
-<u>📁 ꜰɪʟᴇs ᴅᴀᴛᴀʙᴀsᴇ </u>
+<b><u>📁 ꜰɪʟᴇs ᴅᴀᴛᴀʙᴀsᴇ 📁</u></b>
 
-» ᴛᴏᴛᴀʟ ꜰɪʟᴇs - <code>{}</code>
-» ᴜsᴇᴅ sᴛᴏʀᴀɢᴇ - <code>{} / {}</code>
+» ᴛᴏᴛᴀʟ ꜰɪʟᴇs - <code>{files_indexed}</code>
+» ᴜsᴇᴅ sᴛᴏʀᴀɢᴇ - <code>{files_db_used} / {files_db_limit}</code>
 
-<u>🤖 ʙᴏᴛ ᴅᴇᴛᴀɪʟs </u>
+<b><u>🤖 ʙᴏᴛ ᴅᴇᴛᴀɪʟs 🤖</u></b>
 
-» ᴜᴘᴛɪᴍᴇ - <code>{}</code>
-» ʀᴀᴍ - <code>{}%</code>
-» ᴄᴘᴜ - <code>{}%</code></b>"""
+» ᴜᴘᴛɪᴍᴇ - <code>{uptime}</code>
+» ʀᴀᴍ - <code>{ram}</code>
+» ᴄᴘᴜ - <code>{cpu}</code>"""
 
     NEW_USER_TXT = """<b>#New_User {}
 

@@ -343,14 +343,32 @@ async def get_seconds(time_string):
         return 0
 
 
-def get_readable_time(seconds):
-    periods = [("days", 86400), ("hour", 3600), ("min", 60), ("sec", 1)]
+def get_readable_time(seconds: int) -> str:
+    """Returns a human-readable time format like 1d 2h 3m 4s"""
+    if not seconds:
+        return "0s"
+        
     result = ""
-    for period_name, period_seconds in periods:
-        if seconds >= period_seconds:
-            period_value, seconds = divmod(seconds, period_seconds)
-            result += f"{int(period_value)}{period_name}"
-    return result
+    (days, remainder) = divmod(seconds, 86400)
+    days = int(days)
+    if days != 0:
+        result += f"{days}d "
+        
+    (hours, remainder) = divmod(remainder, 3600)
+    hours = int(hours)
+    if hours != 0:
+        result += f"{hours}h "
+        
+    (minutes, sec) = divmod(remainder, 60)
+    minutes = int(minutes)
+    if minutes != 0:
+        result += f"{minutes}m "
+        
+    seconds = int(sec)
+    if seconds != 0:
+        result += f"{seconds}s"
+        
+    return result.strip()
 
 
 async def save_default_settings(id):
