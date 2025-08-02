@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+import datetime
 import pytz
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -52,11 +52,7 @@ class Database:
 
     def new_user(self, id, name):
         return dict(
-            id=id,
-            name=name,
-            join_date=datetime.now(),
-            point=0,
-            ban_status=dict(is_banned=False, ban_reason="")
+            id=id, name=name, point=0, ban_status=dict(is_banned=False, ban_reason="")
         )
 
     async def get_settings(self, group_id):
@@ -76,12 +72,7 @@ class Database:
         await self.req.drop()
 
     def new_group(self, id, title):
-        return dict(
-            id=id,
-            title=title,
-            join_date=datetime.now(),
-            chat_status=dict(is_disabled=False, reason="")
-        )
+        return dict(id=id, title=title, chat_status=dict(is_disabled=False, reason=""))
 
     async def add_user(self, id, name):
         user = self.new_user(id, name)
@@ -139,15 +130,13 @@ class Database:
         b_users = [user["id"] async for user in users]
         return b_users, b_chats
 
-    async def add_chat(self, id, title):
-        """Correctly adds a new group to the database."""
-        group = self.new_group(id, title)
-        await self.grp.insert_one(group)
+    async def add_chat(self, chat, title):
+        chat = self.new_group(chat, title)
+        await self.grp.insert_one(chat)
 
-    async def get_chat(self, chat_id):
-        """Checks if a group exists in the database."""
-        chat = await self.grp.find_one({"id": int(chat_id)})
-        return bool(chat)
+    async def get_chat(self, chat):
+        chat = await self.grp.find_one({"id": int(chat)})
+        return False if not chat else chat.get("chat_status")
 
     async def update_settings(self, id, settings):
         await self.grp.update_one({"id": int(id)}, {"$set": {"settings": settings}})
@@ -494,18 +483,6 @@ class Database:
             {'_id': 'bot_config'},
             {"$set": {'stream_mode_user': is_enabled}},
             upsert=True
-        )
-
-    async def get_new_users_today(self):
-        """Gets the count of users who joined today."""
-        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        return await self.col.count_documents({"join_date": {"$gte": today}})
-
-    async def get_new_groups_today(self):
-        """Gets the count of groups added today."""
-        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        return await self.grp.count_documents({"join_date": {"$gte": today}})
-        
-
+    )
 
 db = Database()
