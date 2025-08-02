@@ -172,6 +172,7 @@ async def get_stats_dashboard(client, message):
 """
     await processing_msg.edit_text(stats_text, parse_mode=ParseMode.HTML)
 
+<<<<<<< HEAD
 
 @Client.on_message(filters.command("invite") & filters.private & filters.user(ADMINS))
 async def invite(client, message):
@@ -188,3 +189,5 @@ async def invite(client, message):
         await message.reply(
             f"Error while generating invite link : {e}\nFor chat:{toGenInvLink}"
         )
+=======
+>>>>>>> bbc8edc642eb7c13d7afb2883b774a61d89dfbdc
