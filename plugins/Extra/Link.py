@@ -607,11 +607,6 @@ async def show_link_stats(client, message):
 • Today's Links: `{stats['today_links']}`
 • Database: {stats['database_status']}
 
-**System Features:**
-• MongoDB Storage: ✅ Permanent & Reliable
-• Quality Options: `{len(QUALITY_OPTIONS)}` available
-• Multi-Language: ✅ API + Manual editing
-
 **Current Session:**
 • Active Previews: `{len(PREVIEW_CACHE)}`
 • Edit Sessions: `{len(ADMIN_STATES)}`
@@ -694,13 +689,6 @@ async def show_link_help(client, message):
 • `/searchlinks <term>` - Search existing links
 • `/linkhelp` - Show this help
 
-**✏️ Edit Features:**
-• **Poster:** Upload new movie poster
-• **Details:** Edit title, year, rating, genre, runtime
-• **Language:** Add/modify languages
-• **Quality:** Select from {len(QUALITY_OPTIONS)} quality options
-• **Caption:** Custom caption text
-
 **🔗 Link Format:**
 • **Prefix:** `{LINK_ID_PREFIX}`
 • **URL:** `{REDIRECT_URL}?id=<link_id>`
@@ -760,17 +748,8 @@ async def initialize_database():
         print("Bot will continue but permanent links may not work")
 
 # Startup Tasks
-print("Enhanced Telegram Bot with MongoDB Starting...")
 print(f"Link Prefix: {LINK_ID_PREFIX}")
 print(f"Redirect URL: {REDIRECT_URL}")
-print(f"Quality Options: {len(QUALITY_OPTIONS)}")
 print(f"Database: MongoDB ({MONGO_DB_NAME})")
-
-# Initialize database on startup
 asyncio.create_task(initialize_database())
-
-# Start periodic cleanup
 asyncio.create_task(periodic_cleanup())
-
-print("✅ Enhanced Permanent Link System Loaded Successfully!")
-print("📝 Commands: /createlink, /linkstats, /searchlinks, /linkhelp")

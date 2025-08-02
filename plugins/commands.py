@@ -439,15 +439,25 @@ async def start(client: Client, message):
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
             if await db.user_verified(user_id):
-                msg = script.THIRDT_VERIFICATION_TEXT
+                current_step = 3
+                msg_template = script.THIRDT_VERIFICATION_TEXT
             else:
-                msg = (
-                    script.SECOND_VERIFICATION_TEXT
-                    if is_second_shortener
-                    else script.VERIFICATION_TEXT
-                )
+                if is_second_shortener:
+                    current_step = 2
+                    msg_template = script.SECOND_VERIFICATION_TEXT
+                else:
+                    current_step = 1
+                    msg_template = script.VERIFICATION_TEXT
+            
+            # 2. Dynamically format the text with all the needed info
+            formatted_text = msg_template.format(
+                message.from_user.mention, 
+                get_status(), 
+                step=current_step, 
+                total=TOTAL_VERIFICATIONS
+            )
             d = await m.reply_text(
-                text=msg.format(message.from_user.mention, get_status()),
+                text=formatted_text,  # Use the newly formatted text
                 protect_content=True,
                 reply_markup=reply_markup,
                 parse_mode=enums.ParseMode.HTML,
@@ -456,6 +466,7 @@ async def start(client: Client, message):
             await d.delete()
             await m.delete()
             return
+        
 
     if data and data.startswith("allfiles"):
         _, grp_id, key = data.split("_", 2)
