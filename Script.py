@@ -365,31 +365,32 @@ sᴜᴄᴄᴇssғᴜʟʟʏ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ"""
 ➩ /setlist {Mirzapur, Money Heist} - <a href="#">Explain</a>
 ➩ /clearlist - Clear all lists</b>"""
 
-    GROUP_TEXT = """<b>
- --------------Set Verify-------------
-/set_verify {{website link}} {{website api}}
-/set_verify_2 {{website link}} {{website api}}
-/set_verify_3 {{website link}} {{website api}}
--------------Set Verify Time-----------
-/set_time_2 {{seconds}} Sᴇᴛ ᴛʜᴇ sᴇᴄᴏɴᴅ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ᴛɪᴍᴇ
-/set_time_3 {{seconds}} Sᴇᴛ ᴛʜᴇ ᴛʜɪʀᴅ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ᴛɪᴍᴇ
---------------Verify On Off------------
-/verifyoff - off verification <a href="https://t.me/hdcinemasupport_bot">Cᴏɴᴛᴀᴄᴛ</a> ᴛʜᴇ ʙᴏᴛ ᴀᴅᴍɪɴ ғᴏʀ ᴀ ᴠᴇʀɪғʏ.ᴏғғ
-/verifyon - on verification 
-------------Set File Caption-----------
-/set_caption - set coustom file caption 
------------Set Imdb Template-----------
-/set_template - set IMDb template <a href="#">Example</a>
---------------Set Tutorial-------------
-/set_tutorial - set verification tutorial 
--------------Set Log Channel-----------
---> ᴀᴅᴅ ʟᴏɢ ᴄʜᴀɴɴᴇʟ ʙʏ ᴛʜɪs ꜰᴏʀᴍᴀᴛ & ᴍᴀᴋᴇ sᴜʀᴇ ʙᴏᴛ ɪs ᴀᴅᴍɪɴ ɪɴ ʏᴏᴜʀ ʟᴏɢ ᴄʜᴀɴɴᴇʟ 👇
+    GROUP_TEXT = """<b>✨ Bᴏᴛ Sᴇᴛᴛɪɴɢs & Cᴏᴍᴍᴀɴᴅs ✨</b>
 
-/set_log {{log channel id}}
----------------------------------------
-ʏᴏᴜ ᴄᴀɴ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀʟʟ ᴅᴇᴛᴀɪʟs 
-ʙʏ /details ᴄᴏᴍᴍᴀɴᴅ
-Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ᴀɴᴅ ᴍᴀᴋᴇ ᴍᴇ ᴀᴅᴍɪɴ ᴀɴᴅ ᴜsᴇ ᴀʟʟ ғᴇᴀᴛᴜʀᴇs😇</b>"""
+<b>⚙️ Vᴇʀɪғʏ Cᴏɴғɪɢᴜʀᴀᴛɪᴏɴ</b>
+<code>/set_verify {{website link}} {{website api}}
+/set_verify_2 {{website link}} {{website api}}
+/set_verify_3 {{website link}} {{website api}}</code>
+
+<b>⏱️ Vᴇʀɪғʏ Tɪᴍᴇ</b>
+<code>/set_time_2 {{seconds}}</code> Sᴇᴛs ᴛʜᴇ sᴇᴄᴏɴᴅ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ᴅᴇʟᴀʏ.
+<code>/set_time_3 {{seconds}}</code> Sᴇᴛs ᴛʜᴇ ᴛʜɪʀᴅ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ᴅᴇʟᴀʏ.
+
+<b>🔌 Vᴇʀɪғɪᴄᴀᴛɪᴏɴ Sᴛᴀᴛᴜs</b>
+<code>/verifyon</code> Tᴜʀɴs ᴜsᴇʀ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ᴏɴ.
+<code>/verifyoff</code> Tᴜʀɴs ᴜsᴇʀ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ᴏғғ.
+
+<b>📝 Cᴜsᴛᴏᴍ Cᴏɴᴛᴇɴᴛ</b>
+<code>/set_caption</code> Sᴇᴛ ᴀ ᴄᴜsᴛᴏᴍ ғɪʟᴇ ᴄᴀᴘᴛɪᴏɴ.
+<code>/set_template</code> Sᴇᴛ ᴀ ᴄᴜsᴛᴏᴍ Iᴍᴅʙ ᴛᴇᴍᴘʟᴀᴛᴇ. <a href="#">Exᴀᴍᴘʟᴇ</a>
+<code>/set_tutorial</code> Sᴇᴛ ᴛʜᴇ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ ᴛᴜᴛᴏʀɪᴀʟ ᴜʀʟ.
+
+<b>📊 Lᴏɢ Cʜᴀɴɴᴇʟ</b>
+Sᴇᴛ ᴜᴘ ᴀ ᴄʜᴀɴɴᴇʟ ғᴏʀ ʙᴏᴛ ʟᴏɢs. Mᴀᴋᴇ sᴜʀᴇ ᴛʜᴇ ʙᴏᴛ ɪs ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜᴀᴛ ᴄʜᴀɴɴᴇʟ.
+<code>/set_log {{log channel id}}</code>
+
+<i>Yᴏᴜ ᴄᴀɴ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴄᴜʀʀᴇɴᴛ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ ᴡɪᴛʜ ᴛʜᴇ <code>/details</code> ᴄᴏᴍᴍᴀɴᴅ.</i>
+"""
 
     ALLADMINCMD_TXT = """<b><blockquote expandable>
 -------------User Premium------------

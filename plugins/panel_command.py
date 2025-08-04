@@ -174,12 +174,12 @@ def get_user_commands_text():
 # --- HELPER FUNCTIONS FOR KEYBOARDS ---
 def get_main_admin_keyboard():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("👑 Admin Panel", callback_data="botpanel#admin")],
-        [InlineKeyboardButton("👥 Group Management", callback_data="botpanel#group")],
-        [InlineKeyboardButton("👤 View User Commands", callback_data="botpanel#user")]
+        [InlineKeyboardButton("👑 ᴀᴅᴍɪɴ ᴘᴀɴᴇʟ", callback_data="botpanel#admin")],
+        [InlineKeyboardButton("👥 ɢʀᴏᴜᴘ ᴍᴀɴᴀɢᴇᴍᴇɴᴛ", callback_data="botpanel#group")],
+        [InlineKeyboardButton("👤 ᴠɪᴇᴡ ᴜꜱᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ", callback_data="botpanel#user")]
     ])
 
 def get_back_button():
     return InlineKeyboardMarkup([[
-        InlineKeyboardButton("⬅️ Back to Main Panel", callback_data="botpanel#main")
+        InlineKeyboardButton("⬅️ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɴᴇʟ", callback_data="botpanel#main")
     ]])

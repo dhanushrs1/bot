@@ -206,13 +206,13 @@ async def refercall(bot, query):
     user_points = referdb.get_refer_points(user_id)
     referral_link = f"https://telegram.dog/{bot.me.username}?start=reff_{user_id}"
     response_text = (
-        f"<b>Hey {query.from_user.mention}!</b> 👋\n\n"
-        "Invite your friends and unlock <i>premium features</i> for free!\n\n"
-        "<u><b>Here's how it works:</b></u>\n"
-        "1️⃣ Share your unique referral link.\n"
-        "2️⃣ For every friend who joins, you'll earn <b>10 points</b>.\n"
-        "3️⃣ Collect <b>100 points</b> to get a <b><i>1-month premium subscription</i></b> on us! 🚀\n\n"
-        "👇 <b>Your Personal Invite Link</b> (Tap to copy)\n"
+        f"<b>ʜᴇʏ {query.from_user.mention}!</b> 👋\n\n"
+        "ɪɴᴠɪᴛᴇ ʏᴏᴜʀ ꜰʀɪᴇɴᴅꜱ ᴀɴᴅ ᴜɴʟᴏᴄᴋ <i>ᴘʀᴇᴍɪᴜᴍ ꜰᴇᴀᴛᴜʀᴇꜱ</i> ꜰᴏʀ ꜰʀᴇᴇ!\n\n"
+        "<u><b>ʜᴇʀᴇ'ꜱ ʜᴏᴡ ɪᴛ ᴡᴏʀᴋꜱ:</b></u>\n"
+        "1️⃣ ꜱʜᴀʀᴇ ʏᴏᴜʀ ᴜɴɪQᴜᴇ ʀᴇꜰᴇʀʀᴀʟ ʟɪɴᴋ.\n"
+        "2️⃣ ꜰᴏʀ ᴇᴠᴇʀʏ ꜰʀɪᴇɴᴅ ᴡʜᴏ ᴊᴏɪɴꜱ, ʏᴏᴜ'ʟʟ ᴇᴀʀɴ <b>10 ᴘᴏɪɴᴛꜱ</b>.\n"
+        "3️⃣ ᴄᴏʟʟᴇᴄᴛ <b>100 ᴘᴏɪɴᴛꜱ</b> ᴛᴏ ɢᴇᴛ ᴀ <b><i>1-ᴍᴏɴᴛʜ ᴘʀᴇᴍɪᴜᴍ ꜱᴜʙꜱᴄʀɪᴘᴛɪᴏɴ</i></b> ᴏɴ ᴜꜱ! 🚀\n\n"
+        "👇 <b>ʏᴏᴜʀ ᴘᴇʀꜱᴏɴᴀʟ ɪɴᴠɪᴛᴇ ʟɪɴᴋ</b> (ᴛᴀᴘ ᴛᴏ ᴄᴏᴘʏ)\n"
         f"<code>{referral_link}</code>"
     )
     btn = [
@@ -1588,7 +1588,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [
             [
                 InlineKeyboardButton(
-                    "ʀᴇᴘᴏ", url="https://github.com/JisshuTG/Jisshu-filter-bot"
+                    "ʀᴇᴘᴏ", url="#"
                 )
             ],
             [
@@ -1619,26 +1619,40 @@ async def cb_handler(client: Client, query: CallbackQuery):
             parse_mode=enums.ParseMode.HTML,
             disable_web_page_preview=True,
         )
+    # elif query.data == "earn2":
+    #     buttons = [
+    #         [
+    #             InlineKeyboardButton(
+    #                 "⇆ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘs ⇆",
+    #                 url=f"http://telegram.dog/{temp.U_NAME}?startgroup=start",
+    #             )
+    #         ],
+    #         [InlineKeyboardButton(" ʙᴀᴄᴋ", callback_data="earn")],
+    #     ]
+    #     reply_markup = InlineKeyboardMarkup(buttons)
+    #     await client.edit_message_caption(
+    #         chat_id=query.message.chat.id,
+    #         message_id=query.message.id,
+    #         caption=script.GROUP_TEXT.format(temp.B_LINK),
+    #         parse_mode=enums.ParseMode.HTML,
+    #         reply_markup=reply_markup,
+    #     )
+
     elif query.data == "earn2":
         buttons = [
             [
                 InlineKeyboardButton(
-                    "⇆ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘs ⇆",
-                    url=f"http://telegram.dog/{temp.U_NAME}?startgroup=start",
+                    "ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘs", url=f"http://telegram.dog/{temp.U_NAME}?startgroup=start"
                 )
             ],
-            [InlineKeyboardButton(" ʙᴀᴄᴋ", callback_data="help")],
+            [InlineKeyboardButton(" ʙᴀᴄᴋ ᴛᴏ ʜᴏᴍᴇ", callback_data="start")],
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await client.edit_message_media(
-            chat_id=query.message.chat.id,
-            message_id=query.message.id,
-            media=InputMediaAnimation(
-                media="https://cdn.jsdelivr.net/gh/Jisshubot/JISSHU_BOTS/Video.mp4/Group_20240921_202540_0001.gif",
-                caption=script.GROUP_TEXT.format(temp.B_LINK),
-                parse_mode=enums.ParseMode.HTML,
-            ),
+        await query.message.edit_text(
+            text=script.GROUP_TEXT.format(temp.B_LINK),
             reply_markup=reply_markup,
+            disable_web_page_preview=True,
+            parse_mode=enums.ParseMode.HTML,
         )
 
     elif query.data == "telegraph":

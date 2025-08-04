@@ -50,7 +50,7 @@ pyrogram.utils.MIN_CHANNEL_ID = -1009147483647
 
 async def Jisshu_start():
     print("\n")
-    print("Credit - Telegram @JISSHU_BOTS")
+    print("HD Cinema Bot Starting...")
     bot_info = await JisshuBot.get_me()
     JisshuBot.username = bot_info.username
     await initialize_clients()

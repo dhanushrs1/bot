@@ -48,8 +48,8 @@ async def handle_builder_input(client, message):
         await message.reply_text(
             "<b>✅ Content saved.</b>\n\nWould you like to add inline buttons to your message?",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("➕ Yes, add buttons", callback_data="builder_add_buttons")],
-                [InlineKeyboardButton("➡️ No, show preview", callback_data="builder_preview")]
+                [InlineKeyboardButton("➕ ʏᴇꜱ, ᴀᴅᴅ ʙᴜᴛᴛᴏɴꜱ", callback_data="builder_add_buttons")],
+                [InlineKeyboardButton("➡️ ɴᴏ, ꜱʜᴏᴡ ᴘʀᴇᴠɪᴇᴡ", callback_data="builder_preview")]
             ])
         )
 
@@ -88,7 +88,7 @@ async def handle_builder_callbacks(client, query):
             "<code>Button Text - https://your.url/here</code>\n\n"
             "When you're finished, click the 'Done' button below.",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("✅ Done Adding Buttons", callback_data="builder_preview")]
+                [InlineKeyboardButton("✅ ᴅᴏɴᴇ ᴀᴅᴅɪɴɢ ʙᴜᴛᴛᴏɴꜱ", callback_data="builder_preview")]
             ]),
             parse_mode=ParseMode.HTML
         )
@@ -113,8 +113,8 @@ async def handle_builder_callbacks(client, query):
             admin_id,
             "<b>Broadcast Preview</b>\n\nThis is the final preview. Ready to send it to all users?",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🚀 Send Now", callback_data="builder_send")],
-                [InlineKeyboardButton("❌ Cancel", callback_data="builder_cancel")]
+                [InlineKeyboardButton("🚀 ꜱᴇɴᴅ ɴᴏᴡ", callback_data="builder_send")],
+                [InlineKeyboardButton("❌ ᴄᴀɴᴄᴇʟ", callback_data="builder_cancel")]
             ]),
             parse_mode=ParseMode.HTML
         )
