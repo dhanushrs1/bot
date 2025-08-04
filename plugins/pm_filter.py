@@ -1407,6 +1407,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],
             [
                 InlineKeyboardButton(" ɪᴍᴀɢᴇ ᴛᴏ ʟɪɴᴋ ", callback_data="telegraph"),
+                InlineKeyboardButton(" ᴅɪꜱᴄʟᴀɪᴍᴇʀ ", callback_data="disclaimer"),
             ],
             [InlineKeyboardButton(" ʜᴏᴍᴇ", callback_data="start")],
         ]
@@ -1609,13 +1610,14 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     "📲 ᴄᴏɴᴛᴀᴄᴛ ᴛᴏ ᴏᴡɴᴇʀ ", url=f"https://telegram.me/{OWNER_USERNAME}"
                 )
             ],
-            [InlineKeyboardButton(" ʙᴀᴄᴋ ", callback_data="about")],
+            [InlineKeyboardButton(" ʙᴀᴄᴋ ", callback_data="special")],
         ]
         reply_markup = InlineKeyboardMarkup(btn)
         await query.message.edit_text(
             text=(script.DISCLAIMER_TXT),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML,
+            disable_web_page_preview=True,
         )
     elif query.data == "earn2":
         buttons = [

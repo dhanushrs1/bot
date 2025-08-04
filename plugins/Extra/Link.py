@@ -26,7 +26,7 @@ db = mongo_client[MONGO_DB_NAME]
 links_collection = db[LINKS_COLLECTION]
 
 # Configuration
-IMDB_API_URL = "https://imdbapi-beige.vercel.app/" 
+IMDB_API_URL = "https://imdbapi-beige.vercel.app/"
 REDIRECT_URL = "https://files.hdcinema.fun/"
 LINK_ID_PREFIX = "hdcnm_"
 
@@ -87,7 +87,7 @@ class LinkDatabase:
         try:
             update_data["updated_at"] = datetime.utcnow()
             result = await links_collection.update_one(
-                {"link_id": link_id}, 
+                {"link_id": link_id},
                 {"$set": update_data}
             )
             return result.modified_count > 0
@@ -104,7 +104,7 @@ class LinkDatabase:
             today_links = await links_collection.count_documents({
                 "created_at": {"$gte": datetime.combine(today, datetime.min.time())}
             })
-            
+
             return {
                 "total_links": total_links,
                 "today_links": today_links,
@@ -132,7 +132,7 @@ class UIManager:
 
         # Title with proper spacing
         caption_parts = [f"🎬 **{title}**", ""]
-        
+
         # Movie details with emojis
         if year != "N/A":
             caption_parts.append(f"📅 **Year:** {year}")
@@ -146,9 +146,9 @@ class UIManager:
             caption_parts.append(f"🎭 **Genre:** {genre}")
         if quality:
             caption_parts.append(f"📺 **Quality:** {quality}")
-        
+
         caption_parts.extend(["", "📂 **Click below to access files**"])
-        
+
         return "\n".join(caption_parts)
 
     @staticmethod
@@ -175,18 +175,18 @@ class UIManager:
         """Create quality selection keyboard."""
         buttons = []
         qualities = sorted(QUALITY_OPTIONS, key=lambda x: x["priority"])
-        
+
         for i in range(0, len(qualities), 2):
             row = []
             for j in range(2):
                 if i + j < len(qualities):
                     quality = qualities[i + j]
                     row.append(InlineKeyboardButton(
-                        quality['name'], 
+                        quality['name'],
                         callback_data=f"quality#{preview_id}#{quality['name']}"
                     ))
             buttons.append(row)
-        
+
         buttons.append([InlineKeyboardButton("← Back", callback_data=f"back#{preview_id}")])
         return InlineKeyboardMarkup(buttons)
 
@@ -202,7 +202,7 @@ async def fetch_movie_data(query: str) -> Optional[Dict[str, Any]]:
     """Fetch movie data from API."""
     if not IMDB_API_URL:
         return None
-        
+
     try:
         timeout = aiohttp.ClientTimeout(total=8)
         async with aiohttp.ClientSession(timeout=timeout) as session:
@@ -219,13 +219,13 @@ def process_languages(language_input: str) -> str:
     """Process and format language strings."""
     if not language_input or language_input == "N/A":
         return "N/A"
-    
+
     if isinstance(language_input, list):
         return " + ".join(language_input)
-    
+
     languages = re.split(r'[,|+&]', str(language_input))
     languages = [lang.strip().title() for lang in languages if lang.strip()]
-    
+
     return " + ".join(languages) if languages else "N/A"
 
 async def validate_image_url(url: str) -> bool:
@@ -249,7 +249,7 @@ async def create_permanent_link(client, message):
 
     search_query = message.text.split(" ", 1)[1].strip()
     progress_msg = await message.reply(f"Searching for: **{search_query}**")
-    
+
     try:
         # Check database for files
         files, _, _ = await get_search_results(search_query, max_results=1)
@@ -259,34 +259,21 @@ async def create_permanent_link(client, message):
         # Fetch movie data
         await progress_msg.edit_text("Fetching movie information...")
         movie_data = await fetch_movie_data(search_query) or {}
-        
+
         # Generate unique link
         await progress_msg.edit_text("Creating permanent link...")
         unique_id = secrets.token_hex(6)
         link_id = f"{LINK_ID_PREFIX}{unique_id}"
-        
-        # Prepare link data for MongoDB
-        link_data = {
-            "link_id": link_id,
-            "search_query": search_query,
-            "admin_id": message.from_user.id,
-            "movie_data": movie_data,
-            "status": "active"
-        }
-        
-        # Save to MongoDB
-        if not await LinkDatabase.save_link(link_data):
-            return await progress_msg.edit_text("Failed to save link to database")
-        
+
         permanent_link = f"{REDIRECT_URL}?id={link_id}"
-        
+
         # Prepare preview data
         movie_data.setdefault("title", search_query.title())
         movie_data.setdefault("language", "N/A")
         movie_data["language"] = process_languages(movie_data.get("language", "N/A"))
-        
+
         caption = UIManager.create_movie_caption(**movie_data)
-        
+
         preview_id = secrets.token_hex(8)
         PREVIEW_CACHE[preview_id] = {
             "link_id": link_id,
@@ -298,10 +285,10 @@ async def create_permanent_link(client, message):
             "search_query": search_query,
             "created_at": time.time()
         }
-        
+
         await progress_msg.delete()
         await send_preview(client, message.from_user.id, preview_id)
-        
+
     except Exception as e:
         await progress_msg.edit_text(f"System Error: {str(e)}")
 
@@ -320,7 +307,7 @@ async def send_preview(client, user_id: int, preview_id: str, delete_previous: b
 
     preview_caption = f"👁️ **PREVIEW MODE**\n\n{preview_data['caption']}"
     preview_info = f"\n\n📊 **Link Info:**\n🔍 Query: `{preview_data['search_query']}`\n🔗 ID: `{preview_data['link_id']}`"
-    
+
     full_caption = preview_caption + preview_info
     keyboard = UIManager.create_preview_keyboard(preview_id)
 
@@ -334,12 +321,12 @@ async def send_preview(client, user_id: int, preview_id: str, delete_previous: b
             sent_message = await client.send_message(
                 user_id, text=full_caption, reply_markup=keyboard, disable_web_page_preview=True
             )
-        
+
         preview_data["message_id"] = sent_message.id
-        
+
     except Exception as e:
         await client.send_message(
-            user_id, 
+            user_id,
             text=f"⚠️ **Preview Error**\n\n{full_caption}",
             reply_markup=keyboard,
             disable_web_page_preview=True
@@ -351,11 +338,11 @@ async def handle_confirm_cancel(client, query):
     """Handle confirm and cancel actions."""
     if query.from_user.id not in ADMINS:
         return await query.answer("Unauthorized", show_alert=True)
-    
+
     try:
         action, preview_id = query.data.split("#")
         preview_data = PREVIEW_CACHE.get(preview_id)
-        
+
         if not preview_data or preview_data["admin_id"] != query.from_user.id:
             return await query.answer("Preview expired", show_alert=True)
 
@@ -363,72 +350,83 @@ async def handle_confirm_cancel(client, query):
             # Post to channel
             is_photo = bool(query.message.photo)
             edit_func = query.message.edit_caption if is_photo else query.message.edit_text
-            
+
             await edit_func("Publishing to channel...")
-            
+
             try:
+                # Save to MongoDB before publishing
+                link_data = {
+                    "link_id": preview_data["link_id"],
+                    "search_query": preview_data["search_query"],
+                    "admin_id": preview_data["admin_id"],
+                    "movie_data": preview_data["movie_data"],
+                    "status": "published"
+                }
+                if not await LinkDatabase.save_link(link_data):
+                    return await edit_func("Failed to save link to database")
+
                 final_keyboard = UIManager.create_final_keyboard(preview_data["permanent_link"])
                 poster = preview_data.get("poster")
-                
+
                 if poster and await validate_image_url(poster):
                     sent_message = await client.send_photo(
-                        REDIRECT_CHANNEL, 
-                        photo=poster, 
-                        caption=preview_data["caption"], 
+                        REDIRECT_CHANNEL,
+                        photo=poster,
+                        caption=preview_data["caption"],
                         reply_markup=final_keyboard
                     )
                 else:
                     sent_message = await client.send_message(
-                        REDIRECT_CHANNEL, 
-                        text=preview_data["caption"], 
-                        reply_markup=final_keyboard, 
+                        REDIRECT_CHANNEL,
+                        text=preview_data["caption"],
+                        reply_markup=final_keyboard,
                         disable_web_page_preview=True
                     )
-                
+
                 # Update link in database
                 await LinkDatabase.update_link(preview_data["link_id"], {
                     "channel_message_id": sent_message.id,
-                    "channel_post_link": sent_message.link,
-                    "status": "published"
+                    "channel_post_link": sent_message.link
                 })
-                
+
                 success_msg = f"✅ **Published Successfully!**\n\n🔗 [View Post]({sent_message.link})\n📱 Message ID: `{sent_message.id}`"
                 await edit_func(success_msg)
-                
+
             except Exception as e:
                 await edit_func(f"Publishing Failed: {str(e)}")
             finally:
                 if preview_id in PREVIEW_CACHE:
                     del PREVIEW_CACHE[preview_id]
-                    
+
         elif action == "cancel":
             if preview_id in PREVIEW_CACHE:
                 del PREVIEW_CACHE[preview_id]
             await query.message.delete()
             await query.answer("Preview cancelled", show_alert=True)
-            
+
     except Exception as e:
         await query.answer(f"Error: {str(e)}", show_alert=True)
+
 
 @Client.on_callback_query(filters.regex(r"^quality#"))
 async def handle_quality_selection(client, query):
     """Handle quality selection."""
     if query.from_user.id not in ADMINS:
         return await query.answer("Unauthorized", show_alert=True)
-    
+
     try:
         _, preview_id, quality = query.data.split("#")
         preview_data = PREVIEW_CACHE.get(preview_id)
-        
+
         if not preview_data:
             return await query.answer("Preview expired", show_alert=True)
-        
+
         preview_data["movie_data"]["quality"] = quality
         preview_data["caption"] = UIManager.create_movie_caption(**preview_data["movie_data"])
-        
+
         await query.answer(f"Quality set to: {quality}", show_alert=True)
         await send_preview(client, query.from_user.id, preview_id, delete_previous=True)
-        
+
     except Exception as e:
         await query.answer(f"Error: {str(e)}", show_alert=True)
 
@@ -437,7 +435,7 @@ async def handle_back_button(client, query):
     """Handle back button."""
     if query.from_user.id not in ADMINS:
         return await query.answer("Unauthorized", show_alert=True)
-    
+
     try:
         _, preview_id = query.data.split("#")
         await send_preview(client, query.from_user.id, preview_id, delete_previous=True)
@@ -449,38 +447,38 @@ async def handle_edit_request(client, query):
     """Handle edit requests."""
     if query.from_user.id not in ADMINS:
         return await query.answer("Unauthorized", show_alert=True)
-    
+
     try:
         _, edit_type, preview_id = query.data.split("#")
-        
+
         if preview_id not in PREVIEW_CACHE:
             return await query.answer("Preview expired", show_alert=True)
-        
+
         if edit_type == "quality":
             keyboard = UIManager.create_quality_keyboard(preview_id)
             is_photo = bool(query.message.photo)
             edit_func = query.message.edit_caption if is_photo else query.message.edit_text
-            
+
             await edit_func("Select Quality\n\nChoose quality for this movie:", reply_markup=keyboard)
             return
-        
+
         # Store edit state
         ADMIN_STATES[query.from_user.id] = {
             "type": edit_type,
             "preview_id": preview_id,
             "started_at": time.time()
         }
-        
+
         prompts = {
             "poster": "**Send new poster URL**\n*Must start with http:// or https://*",
             "details": "**Send details in format:**\n`Title | Year | Rating | Genre | Runtime`",
             "language": "**Send languages:**\n*Examples: English, Hindi + Tamil, English + French*",
             "caption": "**Send complete new caption**"
         }
-        
+
         await query.message.reply_text(f"**Edit {edit_type.title()}**\n\n{prompts.get(edit_type, 'Send your input:')}")
         await query.answer(f"Edit mode: {edit_type}")
-        
+
     except Exception as e:
         await query.answer(f"Error: {str(e)}", show_alert=True)
 
@@ -489,16 +487,16 @@ def admin_input_filter(_, __, message):
     """Filter for admin input during edit mode."""
     if not (message.from_user and message.from_user.id in ADMINS):
         return False
-    
+
     admin_id = message.from_user.id
     if admin_id not in ADMIN_STATES:
         return False
-    
+
     # Check timeout (5 minutes)
     if time.time() - ADMIN_STATES[admin_id].get("started_at", 0) > 300:
         del ADMIN_STATES[admin_id]
         return False
-    
+
     return not message.text.startswith('/')
 
 @Client.on_message(filters.private & filters.text & filters.create(admin_input_filter))
@@ -508,14 +506,14 @@ async def handle_admin_input(client, message: Message):
     state = ADMIN_STATES[admin_id]
     preview_id = state["preview_id"]
     edit_type = state["type"]
-    
+
     if preview_id not in PREVIEW_CACHE:
         del ADMIN_STATES[admin_id]
         return await message.reply("**Session Expired**\n\nPreview data expired. Create new link.")
-    
+
     preview_data = PREVIEW_CACHE[preview_id]
     user_input = message.text.strip()
-    
+
     try:
         if edit_type == "poster":
             if user_input.startswith(("http://", "https://")):
@@ -526,24 +524,24 @@ async def handle_admin_input(client, message: Message):
                     return await message.reply("**Invalid URL**\n\nURL is not accessible or not an image")
             else:
                 return await message.reply("**Invalid Format**\n\nURL must start with http:// or https://")
-                
+
         elif edit_type == "language":
             processed_language = process_languages(user_input)
             preview_data["movie_data"]["language"] = processed_language
             preview_data["caption"] = UIManager.create_movie_caption(**preview_data["movie_data"])
             await message.reply(f"**Language Updated!**\n\nSet to: **{processed_language}**")
-            
+
         elif edit_type == "caption":
             if len(user_input) < 10:
                 return await message.reply("**Too Short**\n\nCaption must be at least 10 characters")
             preview_data["caption"] = user_input
             await message.reply("**Caption Updated!**")
-            
+
         elif edit_type == "details":
             parts = [p.strip() for p in user_input.split("|")]
             if len(parts) != 5:
                 return await message.reply("**Invalid Format**\n\nUse: Title | Year | Rating | Genre | Runtime")
-            
+
             preview_data["movie_data"].update({
                 "title": parts[0] or "Unknown Title",
                 "year": parts[1] or "N/A",
@@ -551,7 +549,7 @@ async def handle_admin_input(client, message: Message):
                 "genres": parts[3] or "N/A",
                 "runtime": parts[4] or "N/A"
             })
-            
+
             preview_data["caption"] = UIManager.create_movie_caption(**preview_data["movie_data"])
             await message.reply("**Details Updated!**")
 
@@ -560,7 +558,7 @@ async def handle_admin_input(client, message: Message):
         update_msg = await message.reply("Updating...")
         await send_preview(client, admin_id, preview_id, delete_previous=True)
         await update_msg.delete()
-        
+
     except Exception as e:
         await message.reply(f"**Update Failed**\n\n{str(e)}")
 
@@ -570,9 +568,9 @@ async def handle_permanent_link(client, message):
     """Handle permanent link access."""
     if len(message.command) > 1 and message.command[1].startswith(LINK_ID_PREFIX):
         link_id = message.command[1]
-        
+
         processing_msg = await message.reply("Processing...")
-        
+
         try:
             link_data = await LinkDatabase.get_link(link_id)
             if link_data:
@@ -580,17 +578,17 @@ async def handle_permanent_link(client, message):
                 if search_query:
                     mock_message = message
                     mock_message.text = search_query
-                    
+
                     await processing_msg.delete()
                     await auto_filter(client, mock_message)
                     return
-            
+
             await processing_msg.edit_text("**Invalid Link**\n\nLink has expired or is invalid")
-            
+
         except Exception as e:
             await processing_msg.edit_text("**Access Error**\n\nFailed to access files")
         return
-    
+
     raise ContinuePropagation
 
 # Admin Commands
@@ -599,7 +597,7 @@ async def show_link_stats(client, message):
     """Show link statistics."""
     try:
         stats = await LinkDatabase.get_stats()
-        
+
         stats_msg = f"""📊 **Link System Status**
 
 **Database Statistics:**
@@ -612,9 +610,9 @@ async def show_link_stats(client, message):
 • Edit Sessions: `{len(ADMIN_STATES)}`
 • API Endpoint: {'✅ Configured' if IMDB_API_URL else '❌ Missing'}
         """
-        
+
         await message.reply(stats_msg.strip())
-        
+
     except Exception as e:
         await message.reply(f"❌ **Stats Error**\n\n{str(e)}")
 
@@ -630,9 +628,9 @@ async def search_links(client, message):
 • `/searchlinks avengers`
 • `/searchlinks 2023`
 • `/searchlinks hdcnm_abc123`""")
-    
+
     search_term = message.text.split(" ", 1)[1].strip()
-    
+
     try:
         # Search in database
         query = {
@@ -642,26 +640,26 @@ async def search_links(client, message):
                 {"movie_data.title": {"$regex": search_term, "$options": "i"}}
             ]
         }
-        
+
         cursor = links_collection.find(query).limit(10)
         results = await cursor.to_list(length=10)
-        
+
         if not results:
             return await message.reply(f"🔍 **No Results**\n\nNo links found for: **{search_term}**")
-        
+
         # Format results
         results_text = f"🔍 **Search Results for:** `{search_term}`\n\n"
-        
+
         for i, link in enumerate(results, 1):
             title = link.get('movie_data', {}).get('title', link.get('search_query', 'Unknown'))
             link_id = link.get('link_id', 'N/A')
             status = link.get('status', 'unknown')
             created = link.get('created_at', datetime.utcnow())
             channel_link = link.get('channel_post_link', 'N/A')
-            
+
             if isinstance(created, str):
                 created = datetime.fromisoformat(created)
-            
+
             results_text += f"**{i}.** {title}\n"
             results_text += f"   🔗 `{link_id}`\n"
             results_text += f"   📅 {created.strftime('%Y-%m-%d')}\n"
@@ -669,12 +667,12 @@ async def search_links(client, message):
             if channel_link != 'N/A':
                 results_text += f"   📺 [View Post]({channel_link})\n"
             results_text += "\n"
-        
+
         if len(results) == 10:
             results_text += "⚠️ *Showing first 10 results only*"
-        
+
         await message.reply(results_text)
-        
+
     except Exception as e:
         await message.reply(f"❌ **Search Failed**\n\n{str(e)}")
 
@@ -693,7 +691,7 @@ async def show_link_help(client, message):
 • **Prefix:** `{LINK_ID_PREFIX}`
 • **URL:** `{REDIRECT_URL}?id=<link_id>`
     """
-    
+
     await message.reply(help_text)
 
 # Automatic Cleanup Task
@@ -702,30 +700,30 @@ async def periodic_cleanup():
     while True:
         try:
             await asyncio.sleep(1800)  # 30 minutes
-            
+
             current_time = time.time()
-            
+
             # Clean expired previews (1 hour old)
             expired_previews = [
                 pid for pid, data in PREVIEW_CACHE.items()
                 if current_time - data.get("created_at", 0) > 3600
             ]
-            
+
             for pid in expired_previews:
                 del PREVIEW_CACHE[pid]
-            
+
             # Clean expired admin states (10 minutes)
             expired_states = [
                 aid for aid, state in ADMIN_STATES.items()
                 if current_time - state.get("started_at", 0) > 600
             ]
-            
+
             for aid in expired_states:
                 del ADMIN_STATES[aid]
-            
+
             if expired_previews or expired_states:
                 print(f"Periodic cleanup: {len(expired_previews)} previews, {len(expired_states)} states")
-                
+
         except Exception as e:
             print(f"Cleanup error: {e}")
 
@@ -734,15 +732,15 @@ async def initialize_database():
     """Initialize MongoDB database and indexes."""
     try:
         await LinkDatabase.create_indexes()
-        
+
         # Test connection
         await db.command("ping")
         print("MongoDB connection successful")
-        
+
         # Get initial stats
         stats = await LinkDatabase.get_stats()
         print(f"Database initialized - Total links: {stats['total_links']}")
-        
+
     except Exception as e:
         print(f"MongoDB initialization failed: {e}")
         print("Bot will continue but permanent links may not work")

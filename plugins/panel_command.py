@@ -5,7 +5,7 @@ from database.users_chats_db import db
 from info import ADMINS
 
 # --- MAIN COMMAND HANDLER ---
-@Client.on_message(filters.command("panel") & filters.private)
+@Client.on_message(filters.command(["panel", "help"]) & filters.private)
 async def panel_command(client, message):
     """
     Handles the /panel command.

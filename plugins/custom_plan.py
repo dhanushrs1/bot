@@ -73,8 +73,8 @@ async def handle_custom_plan_reply(client, message):
 
     try:
         days = int(message.text.strip())
-        if not (1 <= days <= 730):
-            await message.reply_text("<b>Invalid Duration</b>\nPlease enter a number between 1 and 730 days (2 years).", parse_mode=enums.ParseMode.HTML)
+        if not (1 <= days <= 365):
+            await message.reply_text("<b>Invalid Duration</b>\nPlease enter a number between 1 and 365 days (1 years).", parse_mode=enums.ParseMode.HTML)
             return
     except (ValueError, TypeError):
         await message.reply_text("<b>Invalid Input</b>\nPlease enter a valid number.", parse_mode=enums.ParseMode.HTML)

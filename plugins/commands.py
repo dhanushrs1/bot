@@ -1036,7 +1036,7 @@ async def set_shortner(c, m):
         URL = m.command[1]
         API = m.command[2]
         resp = requests.get(
-            f"https://{URL}/api?api={API}&url=https://t.me/+BJfqwUjbkQFmNTU1"
+            f"https://{URL}/api?api={API}&url=https://t.me/+ZSXrGCac4KEzNjA1"
         ).json()
         if resp["status"] == "success":
             SHORT_LINK = resp["shortenedUrl"]
@@ -1087,7 +1087,7 @@ async def set_shortner_2(c, m):
         URL = m.command[1]
         API = m.command[2]
         resp = requests.get(
-            f"https://{URL}/api?api={API}&url=https://t.me/+BJfqwUjbkQFmNTU1"
+            f"https://{URL}/api?api={API}&url=https://t.me/+ZSXrGCac4KEzNjA1"
         ).json()
         if resp["status"] == "success":
             SHORT_LINK = resp["shortenedUrl"]
@@ -1148,7 +1148,7 @@ async def set_shortner_3(c, m):
         URL = m.command[1]
         API = m.command[2]
         resp = requests.get(
-            f"https://{URL}/api?api={API}&url=https://t.me/+BJfqwUjbkQFmNTU1"
+            f"https://{URL}/api?api={API}&url=https://t.me/+ZSXrGCac4KEzNjA1"
         ).json()
         if resp["status"] == "success":
             SHORT_LINK = resp["shortenedUrl"]

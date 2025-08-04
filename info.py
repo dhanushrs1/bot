@@ -100,8 +100,8 @@ TUTORIAL_3 = os.environ.get("TUTORIAL_3", "")
 VERIFY_IMG = os.environ.get(
     "VERIFY_IMG", "https://graph.org/file/1669ab9af68eaa62c3ca4.jpg"
 )
-SHORTENER_API = os.environ.get("SHORTENER_API", "cfa29fbae53740d10753e438bceac21b0e6cee60")
-SHORTENER_WEBSITE = os.environ.get("SHORTENER_WEBSITE", "indiaearnx.com")
+SHORTENER_API = os.environ.get("SHORTENER_API", "d6c82bd9e60d30979ee19165750b46f8c4c1dc6a")
+SHORTENER_WEBSITE = os.environ.get("SHORTENER_WEBSITE", "liteshort.com")
 
 SHORTENER_API2 = os.environ.get("SHORTENER_API2", "")
 SHORTENER_WEBSITE2 = os.environ.get("SHORTENER_WEBSITE2", "")
