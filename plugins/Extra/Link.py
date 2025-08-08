@@ -1,4 +1,3 @@
-# powered by Jisshu_bots and ZISHAN KHAN
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
